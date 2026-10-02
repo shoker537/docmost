@@ -1,1 +1,1 @@
-export { default } from "../../_not-available";
+export { default } from "@/ce/oidc/oidc-settings";

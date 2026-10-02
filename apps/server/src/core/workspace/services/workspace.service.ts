@@ -104,6 +104,7 @@ export class WorkspaceService {
               'authProviders.type',
             ])
             .where('authProviders.isEnabled', '=', true)
+            .where('authProviders.deletedAt', 'is', null)
             .where('workspaceId', '=', workspaceId),
         ).as('authProviders'),
       )

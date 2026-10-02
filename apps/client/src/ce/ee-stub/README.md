@@ -27,6 +27,11 @@ component renders `null`, a list endpoint returns an empty page, a lazy route
 renders `_not-available.tsx`. The enterprise UI they replace is unreachable
 anyway — every link to it is behind an entitlement a CE server does not report.
 
+OIDC is implemented independently in `src/ce/oidc`. The SSO login, security page,
+and provider service adapters forward to that CE implementation. Security & SSO
+is available to self-hosted administrators without an enterprise entitlement.
+See `docs/oidc.md` for setup and account-linking behavior.
+
 Four carry real behaviour, and changing them will break things:
 
 | module | behaviour |
