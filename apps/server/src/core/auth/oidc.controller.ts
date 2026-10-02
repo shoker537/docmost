@@ -110,10 +110,10 @@ export class OidcController {
         path: '/api/sso/oidc',
         maxAge: 600,
       });
-      return reply.redirect(result.url);
+      return reply.redirect(result.url, HttpStatus.FOUND);
     } catch {
       this.logger.warn(`OIDC login could not start for provider ${id}`);
-      return reply.redirect('/login?oidcError=1');
+      return reply.redirect('/login?oidcError=1', HttpStatus.FOUND);
     }
   }
 
@@ -145,11 +145,11 @@ export class OidcController {
         expires: this.environment.getCookieExpiresIn(),
         secure: this.environment.isHttps(),
       });
-      return reply.redirect(result.redirect);
+      return reply.redirect(result.redirect, HttpStatus.FOUND);
     } catch {
       // Avoid exposing identity-provider responses, codes, tokens or secrets.
       this.logger.warn(`OIDC callback failed for provider ${id}`);
-      return reply.redirect('/login?oidcError=1');
+      return reply.redirect('/login?oidcError=1', HttpStatus.FOUND);
     }
   }
 }
