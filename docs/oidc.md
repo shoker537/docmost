@@ -63,3 +63,24 @@ Concurrent login attempts in different browser tabs share one transaction cookie
 only the most recently started attempt can finish. Retry the login if an older
 tab reports an error. Error redirects display a generic message without exposing
 authorization codes, tokens or identity-provider responses.
+
+## Troubleshooting
+
+Callback failures log a `stage` and a safe `reason` in the Docmost container logs.
+The log omits tokens, authorization codes, cookies, identity claims and raw
+identity-provider error responses. Retry from the login button after correcting
+the cause; callback URLs and authorization codes cannot be reused.
+
+- `OIDC transaction cookie is missing`: check the callback **request** Cookie
+  header. The callback **response** intentionally clears `oidcTransaction`, so an
+  empty Set-Cookie value there is expected. Open Docmost using the same scheme
+  and hostname configured in `APP_URL` and registered in the provider callback.
+- `OIDC email_verified claim must be true`: the custom identity provider must
+  assert a boolean `email_verified: true` for users whose email ownership it has
+  verified, in the ID token or UserInfo response.
+- `code exchange and ID token validation`: check the reported protocol code,
+  client credentials, registered callback URI, issuer, audience, nonce and signing
+  keys. A redirect response from the authorization endpoint alone does not prove
+  the code exchange or token validation succeeded.
+- `OIDC signup is disabled`: enable **Allow new accounts** or first create the
+  matching workspace account through the normal invitation flow.

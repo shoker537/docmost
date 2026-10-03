@@ -32,6 +32,7 @@ import {
   OidcProviderIdDto,
   SaveOidcProviderDto,
 } from './dto/oidc-provider.dto';
+import { OidcFlowError, oidcErrorReason } from './oidc-error';
 
 @Controller('sso/oidc')
 export class OidcController {
@@ -111,8 +112,10 @@ export class OidcController {
         maxAge: 600,
       });
       return reply.redirect(result.url, HttpStatus.FOUND);
-    } catch {
-      this.logger.warn(`OIDC login could not start for provider ${id}`);
+    } catch (error) {
+      this.logger.warn(
+        `OIDC login could not start for provider ${id}: ${oidcErrorReason(error)}`,
+      );
       return reply.redirect('/login?oidcError=1', HttpStatus.FOUND);
     }
   }
@@ -146,9 +149,11 @@ export class OidcController {
         secure: this.environment.isHttps(),
       });
       return reply.redirect(result.redirect, HttpStatus.FOUND);
-    } catch {
+    } catch (error) {
       // Avoid exposing identity-provider responses, codes, tokens or secrets.
-      this.logger.warn(`OIDC callback failed for provider ${id}`);
+      const reason =
+        error instanceof OidcFlowError ? error.message : oidcErrorReason(error);
+      this.logger.warn(`OIDC callback failed for provider ${id}: ${reason}`);
       return reply.redirect('/login?oidcError=1', HttpStatus.FOUND);
     }
   }

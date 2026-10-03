@@ -30,6 +30,7 @@ import {
   IAuditService,
 } from '../../../integrations/audit/audit.service';
 import { AuditEvent, AuditResource } from '../../../common/events/audit-events';
+import { OidcFlowError } from '../oidc-error';
 
 type Provider = Selectable<AuthProviders>;
 type LoginState = {
@@ -407,184 +408,203 @@ export class OidcService {
     query: string,
     browser?: string,
   ) {
-    const url = new URL(this.callbackUrl(workspace, id) + query);
-    const state = url.searchParams.get('state');
-    if (
-      !state ||
-      state.length > 128 ||
-      url.searchParams.getAll('state').length !== 1 ||
-      !browser
-    )
-      throw new UnauthorizedException('Invalid OIDC transaction');
-    const key = `oidc:state:${state}`;
-    // Consume once, only for the initiating browser, workspace and provider.
-    const raw = await this.redis.eval(
-      "local v = redis.call('GET', KEYS[1]); if not v then return nil end; local s = cjson.decode(v); if s.browser ~= ARGV[1] or s.workspaceId ~= ARGV[2] or s.providerId ~= ARGV[3] then return nil end; redis.call('DEL', KEYS[1]); return v",
-      1,
-      key,
-      browser,
-      workspace.id,
-      id,
-    );
-    if (typeof raw !== 'string')
-      throw new UnauthorizedException('Invalid or expired OIDC transaction');
-    const transaction = JSON.parse(raw) as LoginState;
-    const provider = await this.provider(id, workspace.id);
-    if (!provider.isEnabled || this.revision(provider) !== transaction.revision)
-      throw new UnauthorizedException('OIDC provider changed');
-    const config = await this.configuration(provider);
-    const tokens = await oidc.authorizationCodeGrant(config, url, {
-      pkceCodeVerifier: transaction.verifier,
-      expectedState: state,
-      expectedNonce: transaction.nonce,
-      idTokenExpected: true,
-    });
-    const claims = tokens.claims();
-    if (!claims?.sub) throw new UnauthorizedException('Missing OIDC subject');
-    let profile: { email?: unknown; email_verified?: unknown; name?: unknown } =
-      {
+    let stage = 'transaction validation';
+    try {
+      const url = new URL(this.callbackUrl(workspace, id) + query);
+      const state = url.searchParams.get('state');
+      if (!browser)
+        throw new UnauthorizedException('OIDC transaction cookie is missing');
+      if (
+        !state ||
+        state.length > 128 ||
+        url.searchParams.getAll('state').length !== 1
+      )
+        throw new UnauthorizedException('Invalid OIDC transaction');
+      const key = `oidc:state:${state}`;
+      // Consume once, only for the initiating browser, workspace and provider.
+      const raw = await this.redis.eval(
+        "local v = redis.call('GET', KEYS[1]); if not v then return nil end; local s = cjson.decode(v); if s.browser ~= ARGV[1] or s.workspaceId ~= ARGV[2] or s.providerId ~= ARGV[3] then return nil end; redis.call('DEL', KEYS[1]); return v",
+        1,
+        key,
+        browser,
+        workspace.id,
+        id,
+      );
+      if (typeof raw !== 'string')
+        throw new UnauthorizedException('Invalid or expired OIDC transaction');
+      const transaction = JSON.parse(raw) as LoginState;
+      stage = 'provider lookup';
+      const provider = await this.provider(id, workspace.id);
+      if (
+        !provider.isEnabled ||
+        this.revision(provider) !== transaction.revision
+      )
+        throw new UnauthorizedException('OIDC provider changed');
+      stage = 'provider discovery';
+      const config = await this.configuration(provider);
+      stage = 'code exchange and ID token validation';
+      const tokens = await oidc.authorizationCodeGrant(config, url, {
+        pkceCodeVerifier: transaction.verifier,
+        expectedState: state,
+        expectedNonce: transaction.nonce,
+        idTokenExpected: true,
+      });
+      const claims = tokens.claims();
+      if (!claims?.sub) throw new UnauthorizedException('Missing OIDC subject');
+      stage = 'UserInfo retrieval';
+      let profile: {
+        email?: unknown;
+        email_verified?: unknown;
+        name?: unknown;
+      } = {
         email: claims.email,
         email_verified: claims.email_verified,
         name: claims.name,
       };
-    if (
-      (!profile.email || profile.email_verified === undefined) &&
-      config.serverMetadata().userinfo_endpoint
-    ) {
-      profile = await oidc.fetchUserInfo(
-        config,
-        tokens.access_token,
-        claims.sub,
-      );
-    }
-    const user = await this.db.transaction().execute(async (trx) => {
-      const current = await trx
-        .selectFrom('authProviders')
-        .selectAll()
-        .where('id', '=', id)
-        .where('workspaceId', '=', workspace.id)
-        .forUpdate()
-        .executeTakeFirst();
       if (
-        !current?.isEnabled ||
-        current.deletedAt ||
-        this.revision(current) !== transaction.revision
-      )
-        throw new UnauthorizedException('OIDC provider changed');
-      const account = await trx
-        .selectFrom('authAccounts')
-        .selectAll()
-        .where('authProviderId', '=', id)
-        .where('providerUserId', '=', claims.sub)
-        .where('workspaceId', '=', workspace.id)
-        .executeTakeFirst();
-      if (account?.deletedAt)
-        throw new UnauthorizedException('Account is disabled');
-      let user = account
-        ? await this.users.findById(account.userId, workspace.id, {
+        (!profile.email || profile.email_verified === undefined) &&
+        config.serverMetadata().userinfo_endpoint
+      ) {
+        profile = await oidc.fetchUserInfo(
+          config,
+          tokens.access_token,
+          claims.sub,
+        );
+      }
+      stage = 'account linking and provisioning';
+      const user = await this.db.transaction().execute(async (trx) => {
+        const current = await trx
+          .selectFrom('authProviders')
+          .selectAll()
+          .where('id', '=', id)
+          .where('workspaceId', '=', workspace.id)
+          .forUpdate()
+          .executeTakeFirst();
+        if (
+          !current?.isEnabled ||
+          current.deletedAt ||
+          this.revision(current) !== transaction.revision
+        )
+          throw new UnauthorizedException('OIDC provider changed');
+        const account = await trx
+          .selectFrom('authAccounts')
+          .selectAll()
+          .where('authProviderId', '=', id)
+          .where('providerUserId', '=', claims.sub)
+          .where('workspaceId', '=', workspace.id)
+          .executeTakeFirst();
+        if (account?.deletedAt)
+          throw new UnauthorizedException('Account is disabled');
+        let user = account
+          ? await this.users.findById(account.userId, workspace.id, {
+              trx,
+              includeUserMfa: true,
+            })
+          : undefined;
+        if (!account) {
+          if (typeof profile.email !== 'string' || !isEmail(profile.email)) {
+            throw new UnauthorizedException(
+              'OIDC email claim is missing or invalid',
+            );
+          }
+          if (profile.email_verified !== true) {
+            throw new UnauthorizedException(
+              'OIDC email_verified claim must be true',
+            );
+          }
+          const email = profile.email.toLowerCase();
+          user = await this.users.findByEmail(email, workspace.id, {
             trx,
             includeUserMfa: true,
-          })
-        : undefined;
-      if (!account) {
-        if (
-          typeof profile.email !== 'string' ||
-          !isEmail(profile.email) ||
-          profile.email_verified !== true
-        ) {
-          throw new UnauthorizedException(
-            'A verified email address is required to link or create an account',
-          );
-        }
-        const email = profile.email.toLowerCase();
-        user = await this.users.findByEmail(email, workspace.id, {
-          trx,
-          includeUserMfa: true,
-        });
-        if (!user) {
-          if (!current.allowSignup)
-            throw new UnauthorizedException(
-              'OIDC signup is disabled; ask an administrator to create your account',
+          });
+          if (!user) {
+            if (!current.allowSignup)
+              throw new UnauthorizedException(
+                'OIDC signup is disabled; ask an administrator to create your account',
+              );
+            if (
+              workspace.emailDomains?.length &&
+              !workspace.emailDomains.some(
+                (domain) => domain.toLowerCase() === email.split('@')[1],
+              )
+            ) {
+              throw new UnauthorizedException('Email domain is not allowed');
+            }
+            user = await this.signup.signup(
+              {
+                email,
+                name:
+                  typeof profile.name === 'string'
+                    ? profile.name.slice(0, 50)
+                    : undefined,
+                password: randomBytes(32).toString('base64url'),
+              },
+              workspace.id,
+              trx,
             );
-          if (
-            workspace.emailDomains?.length &&
-            !workspace.emailDomains.some(
-              (domain) => domain.toLowerCase() === email.split('@')[1],
-            )
-          ) {
-            throw new UnauthorizedException('Email domain is not allowed');
+            await this.users.updateUser(
+              {
+                emailVerifiedAt: new Date(),
+                hasGeneratedPassword: true,
+                role: UserRole.MEMBER,
+              },
+              user.id,
+              workspace.id,
+              trx,
+            );
+            user.role = UserRole.MEMBER;
           }
-          user = await this.signup.signup(
-            {
-              email,
-              name:
-                typeof profile.name === 'string'
-                  ? profile.name.slice(0, 50)
-                  : undefined,
-              password: randomBytes(32).toString('base64url'),
-            },
-            workspace.id,
-            trx,
-          );
-          await this.users.updateUser(
-            {
-              emailVerifiedAt: new Date(),
-              hasGeneratedPassword: true,
-              role: UserRole.MEMBER,
-            },
-            user.id,
-            workspace.id,
-            trx,
-          );
-          user.role = UserRole.MEMBER;
+          if (isUserDisabled(user))
+            throw new UnauthorizedException('Account is disabled');
+          const linked = await trx
+            .selectFrom('authAccounts')
+            .select('id')
+            .where('authProviderId', '=', id)
+            .where('userId', '=', user.id)
+            .executeTakeFirst();
+          if (linked)
+            throw new UnauthorizedException(
+              'Account is already linked to a different OIDC subject',
+            );
+          await trx
+            .insertInto('authAccounts')
+            .values({
+              userId: user.id,
+              providerUserId: claims.sub,
+              authProviderId: id,
+              workspaceId: workspace.id,
+            })
+            .execute();
         }
-        if (isUserDisabled(user))
+        if (!user || isUserDisabled(user))
           throw new UnauthorizedException('Account is disabled');
-        const linked = await trx
-          .selectFrom('authAccounts')
-          .select('id')
-          .where('authProviderId', '=', id)
-          .where('userId', '=', user.id)
-          .executeTakeFirst();
-        if (linked)
+        // CE has no MFA challenge implementation. Fail closed for existing MFA policies.
+        if (workspace.enforceMfa || user['mfa']?.isEnabled)
           throw new UnauthorizedException(
-            'Account is already linked to a different OIDC subject',
+            'This account requires MFA, which is not supported by the CE OIDC flow',
           );
-        await trx
-          .insertInto('authAccounts')
-          .values({
-            userId: user.id,
-            providerUserId: claims.sub,
-            authProviderId: id,
-            workspaceId: workspace.id,
-          })
-          .execute();
-      }
-      if (!user || isUserDisabled(user))
-        throw new UnauthorizedException('Account is disabled');
-      // CE has no MFA challenge implementation. Fail closed for existing MFA policies.
-      if (workspace.enforceMfa || user['mfa']?.isEnabled)
-        throw new UnauthorizedException(
-          'This account requires MFA, which is not supported by the CE OIDC flow',
+        await this.users.updateUser(
+          { lastLoginAt: new Date() },
+          user.id,
+          workspace.id,
+          trx,
         );
-      await this.users.updateUser(
-        { lastLoginAt: new Date() },
-        user.id,
-        workspace.id,
-        trx,
-      );
-      return user;
-    });
-    this.audit.setActorId(user.id);
-    this.audit.log({
-      event: AuditEvent.USER_LOGIN,
-      resourceType: AuditResource.USER,
-      resourceId: user.id,
-      metadata: { source: 'oidc', providerId: id },
-    });
-    return {
-      token: await this.sessions.createSessionAndToken(user),
-      redirect: transaction.redirect,
-    };
+        return user;
+      });
+      stage = 'session creation';
+      this.audit.setActorId(user.id);
+      this.audit.log({
+        event: AuditEvent.USER_LOGIN,
+        resourceType: AuditResource.USER,
+        resourceId: user.id,
+        metadata: { source: 'oidc', providerId: id },
+      });
+      return {
+        token: await this.sessions.createSessionAndToken(user),
+        redirect: transaction.redirect,
+      };
+    } catch (error) {
+      throw new OidcFlowError(stage, error);
+    }
   }
 }
