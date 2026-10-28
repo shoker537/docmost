@@ -4,6 +4,7 @@
 /data
 **/.env*
 **/.nx
+/docmost-*.tar
 
 # Enterprise-licensed source. Neither is imported by CE (the client resolves
 # every @/ee/* import to apps/client/src/ce/ee-stub, and the server's formula
