@@ -6,4 +6,7 @@ import { Feature, FeatureKey } from '../../common/features';
  * with no license key involved. Add a key only once the server actually serves
  * the feature; otherwise the client will show UI that 404s.
  */
-export const ENABLED_FEATURES: readonly FeatureKey[] = [Feature.BASES];
+export const ENABLED_FEATURES: readonly FeatureKey[] = [
+  Feature.BASES,
+  Feature.API_KEYS,
+];

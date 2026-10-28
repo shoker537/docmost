@@ -32,6 +32,10 @@ and provider service adapters forward to that CE implementation. Security & SSO
 is available to self-hosted administrators without an enterprise entitlement.
 See `docs/oidc.md` for setup and account-linking behavior.
 
+API-key adapters forward to the fork-authored `src/ce/api-key` pages and service.
+The CE server reports `api:keys` to enable personal keys and workspace API
+management. These adapters must not return an empty list or an unavailable page.
+
 The `page-permission` adapter exports the existing open-source `ShareModal` as
 `PageShareModal`. The page header imports this name through `@/ee/page-permission`,
 but public page sharing is a core feature: returning `null` here hides its Share

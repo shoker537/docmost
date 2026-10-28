@@ -1,1 +1,1 @@
-export { default } from "../../_not-available";
+export { WorkspaceApiKeysPage as default } from "@/ce/api-key/api-keys-page";

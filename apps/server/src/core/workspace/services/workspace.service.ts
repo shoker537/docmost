@@ -424,7 +424,6 @@ export class WorkspaceService {
       if (
         typeof updateWorkspaceDto.disablePublicSharing !== 'undefined' ||
         typeof updateWorkspaceDto.trashRetentionDays !== 'undefined' ||
-        typeof updateWorkspaceDto.restrictApiToAdmins !== 'undefined' ||
         typeof updateWorkspaceDto.allowMemberTemplates !== 'undefined'
       ) {
         if (!this.licenseCheckService.hasFeature(ws.licenseKey, Feature.SECURITY_SETTINGS, ws.plan)) {
@@ -432,6 +431,14 @@ export class WorkspaceService {
             'This feature requires a valid license',
           );
         }
+      }
+
+      if (
+        typeof updateWorkspaceDto.restrictApiToAdmins !== 'undefined' &&
+        !this.licenseCheckService.hasFeature(ws.licenseKey, Feature.API_KEYS, ws.plan) &&
+        !this.licenseCheckService.hasFeature(ws.licenseKey, Feature.SECURITY_SETTINGS, ws.plan)
+      ) {
+        throw new ForbiddenException('API access management is not enabled');
       }
 
       if (

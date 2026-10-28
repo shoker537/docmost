@@ -30,7 +30,7 @@ export class JwtStrategy extends PassportStrategy(Strategy, 'jwt') {
   ) {
     super({
       jwtFromRequest: (req: FastifyRequest) => {
-        return req.cookies?.authToken || extractBearerTokenFromHeader(req);
+        return extractBearerTokenFromHeader(req) || req.cookies?.authToken;
       },
       ignoreExpiration: false,
       secretOrKey: environmentService.getAppSecret(),
@@ -52,6 +52,9 @@ export class JwtStrategy extends PassportStrategy(Strategy, 'jwt') {
 
     // authType lets guards tell an interactive session from a programmatic credential.
     if (payload.type === JwtType.API_KEY) {
+      if (!extractBearerTokenFromHeader(req)) {
+        throw new UnauthorizedException('API keys require a bearer Authorization header');
+      }
       const authResult = await this.validateApiKey(
         req,
         payload as JwtApiKeyPayload,

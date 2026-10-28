@@ -10,6 +10,11 @@ The wire contract is a separate matter and is deliberately compatible — see
 
 Currently implemented:
 
+- **API keys** (`api-key/`): personal JWT bearer credentials, cursor-paginated
+  management, expiration, revocation and validation against current user/workspace
+  permissions. The core REST controllers accept these credentials through the
+  existing JWT strategy. See [API guide](../../../../docs/api.md).
+
 - **Bases** (`base/`): tables and kanban boards backed by a page. The DB
   migration and the `base` editor node are upstream open-source code; the
   formula engine is the fork's own `packages/ce-formula` and the client is the

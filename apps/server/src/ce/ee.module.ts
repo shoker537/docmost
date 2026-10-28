@@ -5,6 +5,7 @@ import {
 } from '../integrations/audit/audit.service';
 import { LicenceModule } from './licence/licence.module';
 import { BaseModule } from './base/base.module';
+import { ApiKeyModule } from './api-key/api-key.module';
 
 /**
  * app.module.ts drops NoopAuditModule as soon as an EeModule loads, assuming
@@ -20,6 +21,6 @@ import { BaseModule } from './base/base.module';
 class AuditShimModule {}
 
 @Module({
-  imports: [AuditShimModule, LicenceModule, BaseModule],
+  imports: [AuditShimModule, LicenceModule, BaseModule, ApiKeyModule],
 })
 export class EeModule {}

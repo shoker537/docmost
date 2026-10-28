@@ -31,6 +31,11 @@ and its own user interface under `apps/client/src/ce`.
 
 Features currently implemented by CE:
 
+- **OIDC single sign-on** — self-hosted provider configuration, account linking and
+  optional member signup. See [OIDC setup](docs/oidc.md).
+- **API keys and REST API** — personal keys, expiry and revocation, workspace API
+  management, and bearer access to the existing REST endpoints. See [API guide](docs/api.md).
+
 - **Bases** — Notion-style tables and kanban boards backed by a page, with 17 property types,
   filters and sorts, formulas, property type conversion, CSV export and realtime updates.
 
@@ -38,7 +43,7 @@ Every workspace on a CE server has these features enabled. There is no license k
 plan check; the list of enabled features lives in
 [`apps/server/src/ce/licence/enabled-features.ts`](apps/server/src/ce/licence/enabled-features.ts).
 
-Enterprise features that CE does not implement (SSO, MFA, audit logs, and so on) stay hidden in
+Enterprise features that CE does not implement (SAML/LDAP, MFA, audit logs, and so on) stay hidden in
 the UI exactly as they do on an unlicensed upstream install.
 
 ## How it fits together

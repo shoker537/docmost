@@ -11,6 +11,7 @@ import {
   Logger,
 } from '@nestjs/common';
 import { SkipThrottle, ThrottlerGuard } from '@nestjs/throttler';
+import { RequireSessionAuth } from '../../common/decorators/require-session-auth.decorator';
 import {
   ALL_NAMED_THROTTLERS_SKIPPED,
   AUTH_THROTTLER,
@@ -41,6 +42,7 @@ import {
 @SkipThrottle({ ...ALL_NAMED_THROTTLERS_SKIPPED, [AUTH_THROTTLER]: false })
 @UseGuards(ThrottlerGuard)
 @Controller('auth')
+@RequireSessionAuth()
 export class AuthController {
   private readonly logger = new Logger(AuthController.name);
 
