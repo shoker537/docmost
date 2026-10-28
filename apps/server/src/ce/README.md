@@ -28,6 +28,10 @@ Currently implemented:
   development and testing but not distribution, and conditions production use
   on a subscription. Nothing in CE imports it. See
   `packages/ce-formula/README.md`.
+
+  The root workspace manifests list only CE packages. Keep them and the lockfile
+  importers in sync: Docker excludes `packages/base-formula` and `packages/ee`,
+  so neither may remain a workspace importer in the frozen lockfile.
 - **Licence shim** (`licence/`): reports the features in
   `licence/enabled-features.ts` as available to every workspace so the client
   unlocks them. No license key is involved.
