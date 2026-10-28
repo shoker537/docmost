@@ -32,6 +32,11 @@ and provider service adapters forward to that CE implementation. Security & SSO
 is available to self-hosted administrators without an enterprise entitlement.
 See `docs/oidc.md` for setup and account-linking behavior.
 
+The `page-permission` adapter exports the existing open-source `ShareModal` as
+`PageShareModal`. The page header imports this name through `@/ee/page-permission`,
+but public page sharing is a core feature: returning `null` here hides its Share
+button. Workspace/space sharing settings and server permission checks still apply.
+
 Four carry real behaviour, and changing them will break things:
 
 | module | behaviour |
