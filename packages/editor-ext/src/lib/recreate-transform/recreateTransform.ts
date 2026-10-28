@@ -151,7 +151,7 @@ export class RecreateTransform {
       } catch (e) {
         // if nodetypes differ, the updated node-type and contents might not be compatible
         // with schema and requires a replace
-        if (nodeType && e.message.includes("Invalid content")) {
+        if (nodeType && e instanceof Error && e.message.includes("Invalid content")) {
           // @todo add test-case for this scenario
           this.tr.replaceWith(start, start + fromNode.nodeSize, toNode);
         } else {

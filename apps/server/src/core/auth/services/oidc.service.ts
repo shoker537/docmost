@@ -17,7 +17,10 @@ import { AuthProviders } from '@docmost/db/types/db';
 import { KyselyDB, KyselyTransaction } from '@docmost/db/types/kysely.types';
 import { UserRepo } from '@docmost/db/repos/user/user.repo';
 import { Workspace } from '@docmost/db/types/entity.types';
-import { EncryptionService } from '../../../integrations/encryption/encryption.service';
+import {
+  EncryptionPurpose,
+  EncryptionService,
+} from '../../../integrations/encryption/encryption.service';
 import { DomainService } from '../../../integrations/environment/domain.service';
 import { OutboundAgentFactory } from '../../../integrations/outbound/outbound-agent.factory';
 import { SignupService } from './signup.service';
@@ -128,7 +131,10 @@ export class OidcService {
       oidcIssuer: dto.oidcIssuer,
       oidcClientId: dto.oidcClientId.trim(),
       oidcClientSecret: dto.oidcClientSecret
-        ? this.encryption.encrypt(dto.oidcClientSecret)
+        ? this.encryption.encrypt(
+            dto.oidcClientSecret,
+            EncryptionPurpose.OIDC_CLIENT_SECRET,
+          )
         : existing.oidcClientSecret,
       isEnabled: dto.isEnabled,
       allowSignup: dto.allowSignup,
@@ -263,7 +269,10 @@ export class OidcService {
       'oidcIssuer' | 'oidcClientId' | 'oidcClientSecret'
     >,
   ) {
-    const secret = this.encryption.decrypt(provider.oidcClientSecret);
+    const secret = this.encryption.decrypt(
+      provider.oidcClientSecret,
+      EncryptionPurpose.OIDC_CLIENT_SECRET,
+    );
     const guardedFetch: oidc.CustomFetch = async (url, options) => {
       // Pin every discovery, token, UserInfo and JWKS request; never follow redirects.
       const lease = await this.outbound.lease(url);
