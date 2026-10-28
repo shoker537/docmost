@@ -19,6 +19,8 @@ const db = new Kysely<any>({
 
 const migrator = new Migrator({
   db,
+  // Match startup: upstream and CE migrations can arrive in different releases.
+  allowUnorderedMigrations: true,
   provider: new FileMigrationProvider({
     fs,
     path,

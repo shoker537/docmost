@@ -36,6 +36,21 @@ Currently implemented:
   `licence/enabled-features.ts` as available to every workspace so the client
   unlocks them. No license key is involved.
 
+## Database migration ordering
+
+Startup and CLI migrators use Kysely's `allowUnorderedMigrations` option. An
+upstream merge can introduce an earlier-named migration after a fork migration
+has already been applied (for example, `20260905T126412-integrations` after
+`20261003T120000-oidc-subject-unique`). Pending migrations still run in name order;
+applied migrations are skipped by their existing names. Kysely still checks for
+missing previously applied migration files and retains its migration lock and
+transaction handling.
+
+Keep applied migration names stable. Review new upstream migrations for
+dependencies on already-applied CE schema changes; the integrations migration
+creates separate tables and does not depend on the OIDC subject index. Upgrading
+an affected instance requires the updated image, not edits to migration history.
+
 ## Where the bases contract comes from
 
 CE's wire contract — route paths, JSON shapes, stored values, event names — is

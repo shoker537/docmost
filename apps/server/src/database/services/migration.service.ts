@@ -14,6 +14,9 @@ export class MigrationService {
   async migrateToLatest(): Promise<void> {
     const migrator = new Migrator({
       db: this.db,
+      // Upstream can add an earlier-named migration after a CE migration has run.
+      // Keep applied names intact and execute only pending migrations in order.
+      allowUnorderedMigrations: true,
       provider: new FileMigrationProvider({
         fs,
         path,
@@ -23,7 +26,7 @@ export class MigrationService {
 
     const { error, results } = await migrator.migrateToLatest();
 
-    if (results && results.length === 0) {
+    if (!error && results && results.length === 0) {
       this.logger.log('No pending database migrations');
       return;
     }
