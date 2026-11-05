@@ -17,7 +17,7 @@ export default function Home() {
       <DocumentTitle title={t("Home")} />
       <Container size={960} className={classes.container}>
         <header className={classes.heading}>
-          <Text size="xs" c="dimmed" mb={8}>
+          <Text size="sm" c="dimmed" mb={8}>
             {t("Home")}
           </Text>
           <Title order={1} className={classes.title}>

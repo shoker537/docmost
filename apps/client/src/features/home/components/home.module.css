@@ -16,12 +16,12 @@
   }
 
   & :global(.mantine-Tabs-tab .mantine-Text-root) {
-    font-size: 12px;
+    font-size: var(--mantine-font-size-sm);
   }
 
   & :global(.mantine-Tabs-tab svg) {
-    width: 14px;
-    height: 14px;
+    width: 18px;
+    height: 18px;
   }
 }
 

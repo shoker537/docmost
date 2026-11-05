@@ -7,10 +7,7 @@
 }
 
 .ProseMirror {
-  background-color: light-dark(
-    var(--mantine-color-white),
-    var(--mantine-color-dark-7)
-  );
+  background-color: transparent;
   color: light-dark(
     var(--mantine-color-default-color),
     var(--mantine-color-white)

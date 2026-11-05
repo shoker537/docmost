@@ -64,7 +64,7 @@ export default function SpaceCarousel() {
           size={20}
         />
 
-        <Text fz="xs" fw={600} className={classes.title}>
+        <Text fz="sm" fw={600} className={classes.title}>
           {space.name}
         </Text>
       </Group>
@@ -83,7 +83,7 @@ export default function SpaceCarousel() {
         mb="xs"
         className={classes.sectionHeader}
       >
-        <Title order={2} size="xs" fw={600}>
+        <Title order={2} size="sm" fw={600}>
           {t("Spaces you belong to")}
         </Title>
         {data?.items && data.items.length > 1 && (
@@ -92,7 +92,7 @@ export default function SpaceCarousel() {
             to="/spaces"
             variant="subtle"
             color="gray"
-            size="compact-xs"
+            size="compact-sm"
           >
             {t("View all spaces")}
           </Button>

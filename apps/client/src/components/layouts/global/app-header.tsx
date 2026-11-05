@@ -92,7 +92,7 @@ export function AppHeader() {
               />
             </Box>
             <Text
-              size="xs"
+              size="sm"
               fw={600}
               style={{ userSelect: "none" }}
               visibleFrom="sm"

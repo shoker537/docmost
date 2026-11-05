@@ -16,11 +16,11 @@
   display: flex;
   align-items: center;
   text-decoration: none;
-  font-size: 12px;
+  font-size: var(--mantine-font-size-sm);
   color: light-dark(var(--mantine-color-gray-7), var(--mantine-color-dark-1));
   padding-left: var(--mantine-spacing-xs);
-  min-height: 32px;
-  border-radius: var(--mantine-radius-sm);
+  min-height: 34px;
+  border-radius: var(--app-nav-item-radius);
   font-weight: 400;
   user-select: none;
 
@@ -72,7 +72,7 @@
 .sectionHeader {
   padding: 18px 0 8px;
   margin: 0;
-  font-size: 11px;
+  font-size: var(--mantine-font-size-xs);
   color: var(--mantine-color-text);
   font-weight: 600;
 }
@@ -94,8 +94,8 @@
   font-size: var(--mantine-font-size-sm);
   color: light-dark(var(--mantine-color-gray-7), var(--mantine-color-dark-1));
   padding-left: var(--mantine-spacing-xs);
-  min-height: 30px;
-  border-radius: var(--mantine-radius-sm);
+  min-height: 34px;
+  border-radius: var(--app-nav-item-radius);
   font-weight: 500;
   user-select: none;
 
@@ -114,6 +114,6 @@
 }
 
 .spaceItem :global(.mantine-Text-root) {
-  font-size: 12px;
+  font-size: var(--mantine-font-size-sm);
   font-weight: 400;
 }

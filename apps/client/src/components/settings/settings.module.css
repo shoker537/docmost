@@ -20,7 +20,7 @@
     color: light-dark(var(--mantine-color-gray-7), var(--mantine-color-dark-1));
     padding-left: var(--mantine-spacing-xs) ;
     min-height: 30px;
-    border-radius: var(--mantine-radius-sm);
+    border-radius: var(--app-nav-item-radius);
     font-weight: 500;
     user-select: none;
 

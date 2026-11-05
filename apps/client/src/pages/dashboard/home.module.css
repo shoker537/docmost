@@ -11,7 +11,7 @@
 }
 
 .title {
-  font-size: 28px;
+  font-size: 32px;
   line-height: 1.2;
   letter-spacing: -1px;
   font-weight: 650;
@@ -28,7 +28,7 @@
 }
 
 .pages :global(.mantine-Table-td .mantine-Text-root) {
-  font-size: 12px;
+  font-size: var(--mantine-font-size-sm);
 }
 
 .pages :global(.mantine-Badge-root) {

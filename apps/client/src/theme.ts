@@ -109,6 +109,7 @@ export const theme = createTheme({
 export const mantineCssResolver: CSSVariablesResolver = (theme) => ({
   variables: {
     ...v8CssVariablesResolver(theme).variables,
+    "--app-nav-item-radius": "8px",
     "--input-error-size": theme.fontSizes.sm,
   },
   light: {

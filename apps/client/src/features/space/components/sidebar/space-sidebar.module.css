@@ -41,7 +41,7 @@
     width: 100%;
     font-size: var(--mantine-font-size-sm);
     padding: rem(4px) var(--mantine-spacing-xs);
-    border-radius: var(--mantine-radius-sm);
+    border-radius: var(--app-nav-item-radius);
     font-weight: 500;
     color: light-dark(var(--mantine-color-gray-7), var(--mantine-color-dark-0));
 
@@ -78,7 +78,7 @@
     display: block;
     padding: rem(8px) var(--mantine-spacing-xs);
     text-decoration: none;
-    border-radius: var(--mantine-radius-sm);
+    border-radius: var(--app-nav-item-radius);
     font-size: var(--mantine-font-size-xs);
     color: light-dark(var(--mantine-color-gray-7), var(--mantine-color-dark-0));
     line-height: 1;

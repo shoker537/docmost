@@ -74,7 +74,7 @@
   display: flex;
   align-items: center;
   padding: 8px var(--mantine-spacing-xs);
-  border-radius: var(--mantine-radius-sm);
+  border-radius: var(--app-nav-item-radius);
   cursor: pointer;
   text-decoration: none;
   color: light-dark(var(--mantine-color-gray-7), var(--mantine-color-dark-1));
