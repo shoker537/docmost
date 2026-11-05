@@ -40,7 +40,7 @@
     align-items: center;
     width: 100%;
     font-size: var(--mantine-font-size-sm);
-    padding: rem(4px) var(--mantine-spacing-xs);
+    padding: rem(3px) var(--mantine-spacing-xs);
     border-radius: var(--app-nav-item-radius);
     font-weight: 500;
     color: light-dark(var(--mantine-color-gray-7), var(--mantine-color-dark-0));
@@ -76,7 +76,7 @@
 
 .pageLink {
     display: block;
-    padding: rem(8px) var(--mantine-spacing-xs);
+    padding: rem(7px) var(--mantine-spacing-xs);
     text-decoration: none;
     border-radius: var(--app-nav-item-radius);
     font-size: var(--mantine-font-size-xs);
