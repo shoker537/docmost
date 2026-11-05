@@ -1,8 +1,10 @@
 import "@mantine/core/styles.css";
+import "@fontsource-variable/inter";
 import "@mantine/spotlight/styles.css";
 import "@mantine/notifications/styles.css";
-import '@mantine/dates/styles.css';
+import "@mantine/dates/styles.css";
 import "@/styles/a11y-overrides.css";
+import "@/styles/scrollbars.css";
 
 import ReactDOM from "react-dom/client";
 import App from "./App.tsx";
@@ -24,6 +26,7 @@ import {
 import { installChunkLoadRecovery } from "@/lib/chunk-load-recovery.ts";
 import { AppErrorBoundary } from "@/components/ui/app-error-boundary.tsx";
 import posthog from "posthog-js";
+import OverlayScrollbars from "@/components/ui/overlay-scrollbars";
 
 export const queryClient = new QueryClient({
   defaultOptions: {
@@ -48,11 +51,17 @@ if (isCloud() && isPostHogEnabled) {
 installChunkLoadRecovery();
 
 const container = document.getElementById("root") as HTMLElement;
-const root = (container as any).__reactRoot ??= ReactDOM.createRoot(container);
+const root = ((container as any).__reactRoot ??=
+  ReactDOM.createRoot(container));
 
 root.render(
   <BrowserRouter>
-    <MantineProvider theme={theme} cssVariablesResolver={mantineCssResolver}>
+    <MantineProvider
+      theme={theme}
+      cssVariablesResolver={mantineCssResolver}
+      defaultColorScheme="dark"
+    >
+      <OverlayScrollbars />
       <ModalsProvider>
         <QueryClientProvider client={queryClient}>
           <Notifications position="bottom-center" limit={3} zIndex={10000} />

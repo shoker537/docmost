@@ -1,0 +1,40 @@
+.container {
+  padding: 40px 48px 64px;
+
+  @media (max-width: $mantine-breakpoint-sm) {
+    padding: 24px 8px 40px;
+  }
+}
+
+.heading {
+  margin-bottom: 32px;
+}
+
+.title {
+  font-size: 28px;
+  line-height: 1.2;
+  letter-spacing: -1px;
+  font-weight: 650;
+}
+
+.pages,
+.spaces {
+  margin-top: 32px;
+}
+
+.pages :global(.mantine-Table-td) {
+  padding: 10px 8px;
+  border-color: light-dark(#ededed, #242424);
+}
+
+.pages :global(.mantine-Table-td .mantine-Text-root) {
+  font-size: 12px;
+}
+
+.pages :global(.mantine-Badge-root) {
+  background: transparent;
+  color: var(--mantine-color-dimmed);
+  font-weight: 400;
+  text-transform: none;
+  letter-spacing: 0;
+}

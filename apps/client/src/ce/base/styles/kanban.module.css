@@ -5,12 +5,18 @@
   min-height: 0;
   min-width: 0;
   position: relative;
-  --kanban-border: light-dark(var(--mantine-color-gray-3), var(--mantine-color-dark-4));
-  --kanban-column-bg: light-dark(var(--mantine-color-gray-0), var(--mantine-color-dark-6));
-  --kanban-column-over: light-dark(var(--mantine-color-gray-1), var(--mantine-color-dark-5));
-  --kanban-card-bg: light-dark(var(--mantine-color-white), var(--mantine-color-dark-7));
-  --kanban-card-border: light-dark(var(--mantine-color-gray-3), var(--mantine-color-dark-4));
-  --kanban-hover: light-dark(var(--mantine-color-gray-1), var(--mantine-color-dark-5));
+  --kanban-border: light-dark(#e7e7e7, #252525);
+  --kanban-column-bg: light-dark(#f7f7f7, #191919);
+  --kanban-column-over: light-dark(
+    var(--mantine-color-gray-1),
+    var(--mantine-color-dark-5)
+  );
+  --kanban-card-bg: light-dark(#ffffff, #131313);
+  --kanban-card-border: light-dark(#e7e7e7, #252525);
+  --kanban-hover: light-dark(
+    var(--mantine-color-gray-1),
+    var(--mantine-color-dark-5)
+  );
 }
 
 .root[data-embedded] {
@@ -29,7 +35,7 @@
 
 .board {
   display: flex;
-  align-items: flex-start;
+  align-items: stretch;
   gap: 12px;
   flex: 1;
   min-height: 0;
@@ -56,10 +62,11 @@
   position: relative;
   display: flex;
   flex-direction: column;
-  width: 260px;
+  width: 300px;
   flex-shrink: 0;
   max-height: 100%;
-  border-radius: 6px;
+  border: 1px solid var(--kanban-border);
+  border-radius: 12px;
   background: var(--kanban-column-bg);
   transition: background 100ms;
 }
@@ -101,7 +108,7 @@
   align-items: center;
   gap: 6px;
   min-height: 34px;
-  padding: 6px 6px 4px 10px;
+  padding: 10px;
   flex-shrink: 0;
 }
 
@@ -129,6 +136,9 @@
 
 .columnCount {
   font-size: var(--mantine-font-size-xs);
+  border-radius: 50%;
+  background: light-dark(#ededed, #252525);
+  padding: 0 5px;
   color: var(--mantine-color-dimmed);
   font-variant-numeric: tabular-nums;
   flex-shrink: 0;
@@ -210,8 +220,8 @@
   display: flex;
   flex-direction: column;
   gap: 6px;
-  padding: 8px 10px;
-  border-radius: 6px;
+  padding: 12px;
+  border-radius: 9px;
   border: 1px solid var(--kanban-card-border);
   background: var(--kanban-card-bg);
   box-shadow: 0 1px 2px rgba(0, 0, 0, 0.04);
@@ -255,7 +265,7 @@
 
 .cardTitle {
   font-size: var(--mantine-font-size-sm);
-  font-weight: 500;
+  font-weight: 600;
   line-height: 1.4;
   overflow-wrap: anywhere;
 }
@@ -284,7 +294,8 @@
 }
 
 .propertiesHeader {
-  border-bottom: 1px solid light-dark(var(--mantine-color-gray-3), var(--mantine-color-dark-4));
+  border-bottom: 1px solid
+    light-dark(var(--mantine-color-gray-3), var(--mantine-color-dark-4));
 }
 
 .propertiesList {
@@ -299,7 +310,10 @@
 }
 
 .propertyRow:hover {
-  background: light-dark(var(--mantine-color-gray-1), var(--mantine-color-dark-5));
+  background: light-dark(
+    var(--mantine-color-gray-1),
+    var(--mantine-color-dark-5)
+  );
 }
 
 .propertyLabel {

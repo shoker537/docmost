@@ -1,8 +1,13 @@
-import { useEffect, useState } from "react";
-import { ScrollArea, Text, Divider, Modal, UnstyledButton, Tooltip } from "@mantine/core";
+import {
+  ScrollArea,
+  Text,
+  Divider,
+  Modal,
+  UnstyledButton,
+  Tooltip,
+} from "@mantine/core";
 import {
   IconHome,
-  IconClock,
   IconStar,
   IconLayoutGrid,
   IconSettings,
@@ -28,7 +33,7 @@ import { useUpgradeLabel } from "@/ee/hooks/use-upgrade-label";
 export default function GlobalSidebar() {
   const { t } = useTranslation();
   const location = useLocation();
-  const [active, setActive] = useState(location.pathname);
+  const active = location.pathname;
   const [mobileSidebarOpened] = useAtom(mobileSidebarAtom);
   const toggleMobileSidebar = useToggleSidebar(mobileSidebarAtom);
   const hasTemplates = useHasFeature(Feature.TEMPLATES);
@@ -44,20 +49,22 @@ export default function GlobalSidebar() {
       disabled: !hasTemplates,
     },
   ];
-  const { data: favoriteSpacesData, isPending: isFavoritesPending } = useFavoritesQuery("space");
-  const favoriteSpaces = favoriteSpacesData?.pages.flatMap((p) => p.items) ?? [];
+  const { data: favoriteSpacesData, isPending: isFavoritesPending } =
+    useFavoritesQuery("space");
+  const favoriteSpaces =
+    favoriteSpacesData?.pages.flatMap((p) => p.items) ?? [];
   const sortedFavoriteSpaces = [...favoriteSpaces]
     .filter((fav) => fav.space)
     .sort((a, b) => {
-      const cmp = (a.space!.name ?? "").localeCompare(b.space!.name ?? "", undefined, { sensitivity: "base" });
+      const cmp = (a.space!.name ?? "").localeCompare(
+        b.space!.name ?? "",
+        undefined,
+        { sensitivity: "base" },
+      );
       return cmp !== 0 ? cmp : a.id.localeCompare(b.id);
     });
   const [inviteOpened, { open: openInvite, close: closeInvite }] =
     useDisclosure(false);
-
-  useEffect(() => {
-    setActive(location.pathname);
-  }, [location.pathname]);
 
   const handleNavClick = () => {
     if (mobileSidebarOpened) {
@@ -103,9 +110,10 @@ export default function GlobalSidebar() {
           )}
         </div>
 
-        <Divider my="xs" />
         <div className={classes.section}>
-          <Text component="h2" className={classes.sectionHeader}>{t("Favorite spaces")}</Text>
+          <Text component="h2" className={classes.sectionHeader}>
+            {t("Favorite spaces")}
+          </Text>
           {!isFavoritesPending && sortedFavoriteSpaces.length === 0 ? (
             <Text size="xs" c="dimmed" pl="xs" py={4}>
               {t("Favorite spaces appear here")}
@@ -146,14 +154,10 @@ export default function GlobalSidebar() {
             </>
           )}
         </div>
-
       </ScrollArea>
 
       <div className={classes.bottomSection}>
-        <UnstyledButton
-          className={classes.link}
-          onClick={openInvite}
-        >
+        <UnstyledButton className={classes.link} onClick={openInvite}>
           <IconUserPlus className={classes.linkIcon} stroke={2} />
           <span>{t("Invite People")}</span>
         </UnstyledButton>

@@ -1,10 +1,40 @@
-.page {
-    display: block;
-    width: 100%;
-    padding: var(--mantine-spacing-md);
-    color: light-dark(var(--mantine-color-black), var(--mantine-color-dark-0));
+.tabs {
+  & :global(.mantine-Tabs-list) {
+    gap: 16px;
+    border-color: light-dark(#e7e7e7, #252525);
+  }
 
-    @mixin hover {
-        background-color: light-dark(var(--mantine-color-gray-1), var(--mantine-color-dark-8));
-    }
+  & :global(.mantine-Tabs-tab) {
+    padding: 8px 0 10px;
+    color: var(--mantine-color-dimmed);
+    border-radius: 0;
+  }
+
+  & :global(.mantine-Tabs-tab[data-active]) {
+    color: var(--mantine-color-text);
+    border-color: light-dark(#444444, #d4d4d4);
+  }
+
+  & :global(.mantine-Tabs-tab .mantine-Text-root) {
+    font-size: 12px;
+  }
+
+  & :global(.mantine-Tabs-tab svg) {
+    width: 14px;
+    height: 14px;
+  }
+}
+
+.page {
+  display: block;
+  width: 100%;
+  padding: var(--mantine-spacing-md);
+  color: light-dark(var(--mantine-color-black), var(--mantine-color-dark-0));
+
+  @mixin hover {
+    background-color: light-dark(
+      var(--mantine-color-gray-1),
+      var(--mantine-color-dark-8)
+    );
+  }
 }

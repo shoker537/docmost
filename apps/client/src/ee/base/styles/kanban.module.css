@@ -18,7 +18,8 @@
   min-height: 0;
   overflow-x: auto;
   overflow-y: hidden;
-  padding: 8px var(--embed-grid-pad-right, 12px) 8px var(--embed-grid-pad-left, 12px);
+  padding: 8px var(--embed-grid-pad-right, 12px) 8px
+    var(--embed-grid-pad-left, 12px);
   margin-left: calc(-1 * var(--embed-extend-l, 0px));
   margin-right: calc(-1 * var(--embed-extend-r, 0px));
   overflow-anchor: none;
@@ -38,10 +39,11 @@
   display: flex;
   flex-direction: column;
   flex-shrink: 0;
-  width: 280px;
+  width: 300px;
   min-height: 0;
-  background: light-dark(var(--mantine-color-gray-0), var(--mantine-color-dark-7));
-  border-radius: 10px;
+  background: light-dark(#f7f7f7, #191919);
+  border: 1px solid light-dark(#e7e7e7, #252525);
+  border-radius: 12px;
 }
 
 .columnHeader {
@@ -88,7 +90,10 @@
 }
 
 .columnTitleButton:hover {
-  background: light-dark(var(--mantine-color-gray-1), var(--mantine-color-dark-5));
+  background: light-dark(
+    var(--mantine-color-gray-1),
+    var(--mantine-color-dark-5)
+  );
 }
 
 .cardList {
@@ -104,10 +109,9 @@
 
 .card {
   position: relative;
-  background: light-dark(var(--mantine-color-white), var(--mantine-color-dark-6));
-  border: 1px solid light-dark(var(--mantine-color-gray-2), var(--mantine-color-dark-4));
-  border-radius: 8px;
-  box-shadow: 0 1px 2px light-dark(rgba(0, 0, 0, 0.06), rgba(0, 0, 0, 0.25));
+  background: light-dark(#ffffff, #131313);
+  border: 1px solid light-dark(#e7e7e7, #252525);
+  border-radius: 9px;
   padding: 12px;
   cursor: pointer;
   display: flex;
@@ -120,7 +124,10 @@
 }
 
 .card:hover {
-  border-color: light-dark(var(--mantine-color-gray-3), var(--mantine-color-dark-3));
+  border-color: light-dark(
+    var(--mantine-color-gray-3),
+    var(--mantine-color-dark-3)
+  );
 }
 
 .card:focus-visible {
@@ -130,7 +137,7 @@
 
 .cardTitle {
   font-size: var(--mantine-font-size-sm);
-  font-weight: 500;
+  font-weight: 600;
   line-height: 1.3;
   word-break: break-word;
 }
@@ -157,7 +164,10 @@
 }
 
 .addCard:hover {
-  background: light-dark(var(--mantine-color-gray-1), var(--mantine-color-dark-5));
+  background: light-dark(
+    var(--mantine-color-gray-1),
+    var(--mantine-color-dark-5)
+  );
 }
 
 .addCard:focus-visible {
@@ -166,8 +176,12 @@
 }
 
 .cardDragPreview {
-  background: light-dark(var(--mantine-color-white), var(--mantine-color-dark-6));
-  border: 1px solid light-dark(var(--mantine-color-gray-3), var(--mantine-color-dark-4));
+  background: light-dark(
+    var(--mantine-color-white),
+    var(--mantine-color-dark-6)
+  );
+  border: 1px solid
+    light-dark(var(--mantine-color-gray-3), var(--mantine-color-dark-4));
   border-radius: 8px;
   box-shadow: 0 8px 24px rgba(0, 0, 0, 0.18);
   padding: 8px 10px;

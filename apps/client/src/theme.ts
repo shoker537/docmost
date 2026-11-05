@@ -3,6 +3,7 @@ import {
   createTheme,
   CSSVariablesResolver,
   MantineColorsTuple,
+  ScrollArea,
   Tabs,
   Tooltip,
   v8CssVariablesResolver,
@@ -38,9 +39,30 @@ export const theme = createTheme({
   colors: {
     blue,
     red,
+    dark: [
+      "#eeeeee",
+      "#d4d4d4",
+      "#b0b0b0",
+      "#999999",
+      "#343434",
+      "#292929",
+      "#202020",
+      "#191919",
+      "#131313",
+      "#101010",
+    ],
   },
-  defaultRadius: 'sm',
+  fontFamily:
+    "Inter Variable, -apple-system, BlinkMacSystemFont, Segoe UI, sans-serif",
+  headings: {
+    fontFamily:
+      "Inter Variable, -apple-system, BlinkMacSystemFont, Segoe UI, sans-serif",
+  },
+  defaultRadius: "md",
   components: {
+    ScrollArea: ScrollArea.extend({
+      defaultProps: { scrollbarSize: 8, offsetScrollbars: false },
+    }),
     Tooltip: Tooltip.extend({
       defaultProps: {
         events: { hover: true, focus: true, touch: false },
@@ -127,6 +149,12 @@ export const mantineCssResolver: CSSVariablesResolver = (theme) => ({
   },
   dark: {
     ...v8CssVariablesResolver(theme).dark,
+    "--mantine-color-body": "#131313",
+    "--mantine-color-text": "#eeeeee",
+    "--mantine-color-dimmed": "#999999",
+    "--mantine-color-default": "#191919",
+    "--mantine-color-default-hover": "#202020",
+    "--mantine-color-default-border": "#292929",
     "--mantine-color-dark-light-color": "var(--mantine-color-gray-4)",
     "--mantine-color-dark-light-hover": "var(--mantine-color-default-hover)",
   },

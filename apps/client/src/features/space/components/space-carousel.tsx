@@ -1,4 +1,4 @@
-import { Text, Card, rem, Group, Button, Skeleton, Title } from "@mantine/core";
+import { Text, Card, Group, Button, Skeleton, Title } from "@mantine/core";
 import {
   prefetchSpace,
   useGetSpacesQuery,
@@ -8,7 +8,6 @@ import { Link } from "react-router-dom";
 import classes from "./space-carousel.module.css";
 import { formatMemberCount } from "@/lib";
 import { useTranslation } from "react-i18next";
-import { IconArrowRight } from "@tabler/icons-react";
 import { CustomAvatar } from "@/components/ui/custom-avatar.tsx";
 import { AvatarIconType } from "@/features/attachments/types/attachment.types.ts";
 import CardCarousel from "@/components/ui/card-carousel";
@@ -16,8 +15,7 @@ import CardCarousel from "@/components/ui/card-carousel";
 function SpaceCardSkeleton() {
   return (
     <Card p="xs" radius="md" withBorder className={classes.card}>
-      <Card.Section className={classes.cardSection} h={40} />
-      <Skeleton circle height={38} width={38} mt={rem(-20)} />
+      <Skeleton circle height={20} width={20} />
       <Skeleton height={14} mt="xs" width="70%" radius="xl" />
       <Skeleton height={10} mt="md" width="40%" radius="xl" />
     </Card>
@@ -56,22 +54,22 @@ export default function SpaceCarousel() {
       className={classes.card}
       withBorder
     >
-      <Card.Section className={classes.cardSection} h={40}></Card.Section>
-      <CustomAvatar
-        name={space.name}
-        avatarUrl={space.logo}
-        type={AvatarIconType.SPACE_ICON}
-        color="initials"
-        variant="filled"
-        size="md"
-        mt={rem(-20)}
-      />
+      <Group wrap="nowrap" gap={8}>
+        <CustomAvatar
+          name={space.name}
+          avatarUrl={space.logo}
+          type={AvatarIconType.SPACE_ICON}
+          color="gray"
+          variant="light"
+          size={20}
+        />
 
-      <Text fz="md" fw={500} mt="xs" className={classes.title}>
-        {space.name}
-      </Text>
+        <Text fz="xs" fw={600} className={classes.title}>
+          {space.name}
+        </Text>
+      </Group>
 
-      <Text c="dimmed" size="xs" fw={700} mt="md">
+      <Text c="dimmed" size="xs" fw={400} mt="md">
         {formatMemberCount(space.memberCount, t)}
       </Text>
     </Card>
@@ -79,27 +77,29 @@ export default function SpaceCarousel() {
 
   return (
     <>
-      <Group justify="space-between" align="center" mb="md">
-        <Title order={2} size="h6" fw={500}>
+      <Group
+        justify="space-between"
+        align="center"
+        mb="xs"
+        className={classes.sectionHeader}
+      >
+        <Title order={2} size="xs" fw={600}>
           {t("Spaces you belong to")}
         </Title>
-      </Group>
-
-      <CardCarousel ariaLabel={t("Spaces you belong to")}>{cards}</CardCarousel>
-
-      {data?.items && data.items.length > 1 && (
-        <Group justify="flex-end" mt="lg">
+        {data?.items && data.items.length > 1 && (
           <Button
             component={Link}
             to="/spaces"
             variant="subtle"
-            rightSection={<IconArrowRight size={16} />}
-            size="sm"
+            color="gray"
+            size="compact-xs"
           >
             {t("View all spaces")}
           </Button>
-        </Group>
-      )}
+        )}
+      </Group>
+
+      <CardCarousel ariaLabel={t("Spaces you belong to")}>{cards}</CardCarousel>
     </>
   );
 }

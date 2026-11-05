@@ -1,10 +1,13 @@
 .card {
   background-color: var(--mantine-color-body);
-  width: 220px;
+  width: 180px;
+  padding: 14px 12px;
+  border-color: light-dark(#e7e7e7, #252525);
+  border-radius: 9px;
 
   @mixin hover {
-    box-shadow: var(--mantine-shadow-xs);
-    transform: scale(1.02);
+    background: light-dark(#f7f7f7, #191919);
+    border-color: light-dark(#cccccc, #343434);
   }
 
   &:focus-visible {
@@ -13,15 +16,15 @@
   }
 }
 
-.cardSection {
-  background: light-dark(var(--mantine-color-gray-1), var(--mantine-color-dark-6));
-}
-
 .title {
-  font-family:
-          Greycliff CF,
-          var(--mantine-font-family);
+  min-width: 0;
+  font-family: var(--mantine-font-family);
   text-overflow: ellipsis;
   overflow: hidden;
   white-space: nowrap;
+}
+
+.sectionHeader {
+  padding-bottom: 10px;
+  border-bottom: 1px solid light-dark(#e7e7e7, #252525);
 }

@@ -9,9 +9,8 @@ import {
 } from "@mantine/core";
 import classes from "./app-header.module.css";
 import React from "react";
-import TopMenu from "@/components/layouts/global/top-menu.tsx";
-import { Link, useLocation } from "react-router-dom";
-import { IconSparkles } from "@tabler/icons-react";
+import { Link, useLocation, useParams } from "react-router-dom";
+import { IconChevronRight, IconSparkles } from "@tabler/icons-react";
 import useToggleAside from "@/hooks/use-toggle-aside.tsx";
 import APP_ROUTE from "@/lib/app-route.ts";
 import { useAtom } from "jotai";
@@ -23,20 +22,18 @@ import { useToggleSidebar } from "@/components/layouts/global/hooks/hooks/use-to
 import SidebarToggle from "@/components/ui/sidebar-toggle-button.tsx";
 import { useTranslation } from "react-i18next";
 import useTrial from "@/ee/hooks/use-trial.tsx";
-import { isCloud } from "@/lib/config.ts";
-import {
-  SearchControl,
-  SearchMobileControl,
-} from "@/features/search/components/search-control.tsx";
-import {
-  searchSpotlight,
-  shareSearchSpotlight,
-} from "@/features/search/constants.ts";
+import { getSpaceUrl, isCloud } from "@/lib/config.ts";
 import { NotificationPopover } from "@/features/notification/components/notification-popover.tsx";
 import { workspaceAtom } from "@/features/user/atoms/current-user-atom.ts";
+import { useGetSpaceBySlugQuery } from "@/features/space/queries/space-query";
 
 const links = [
   { link: APP_ROUTE.HOME, label: "Home" },
+  { link: "/favorites", label: "Favorites" },
+  { link: "/spaces", label: "Spaces" },
+  { link: "/templates", label: "Templates" },
+  { link: "/settings", label: "Settings" },
+  { link: "/ai", label: "AI Chat" },
 ];
 
 export function AppHeader() {
@@ -48,22 +45,23 @@ export function AppHeader() {
   const toggleDesktop = useToggleSidebar(desktopSidebarAtom);
   const { isTrial, trialDaysLeft } = useTrial();
   const location = useLocation();
+  const { spaceSlug } = useParams();
+  const { data: space } = useGetSpaceBySlugQuery(spaceSlug);
   const toggleAside = useToggleAside();
   const [workspace] = useAtom(workspaceAtom);
   const aiChatEnabled = workspace?.settings?.ai?.chat === true;
 
   const isPageRoute = location.pathname.includes("/p/");
 
-  const items = links.map((link) => (
-    <Link key={link.label} to={link.link} className={classes.link}>
-      {t(link.label)}
-    </Link>
-  ));
+  const currentLink = links.find(
+    ({ link }) =>
+      location.pathname === link || location.pathname.startsWith(`${link}/`),
+  );
 
   return (
     <>
-      <Group h="100%" px="md" justify="space-between" wrap={"nowrap"}>
-        <Group wrap="nowrap">
+      <Group h="100%" px="xs" justify="space-between" wrap={"nowrap"} gap="xs">
+        <Group wrap="nowrap" gap="xs" miw={0}>
           <Tooltip label={t("Sidebar toggle")}>
             <SidebarToggle
               aria-label={t("Sidebar toggle")}
@@ -94,30 +92,39 @@ export function AppHeader() {
               />
             </Box>
             <Text
-              size="lg"
+              size="xs"
               fw={600}
               style={{ userSelect: "none" }}
               visibleFrom="sm"
             >
-              Docmost
+              {workspace?.name ?? "Docmost"}
             </Text>
           </Link>
 
-          <Group ml={50} gap={5} className={classes.links} visibleFrom="sm">
-            {items}
-          </Group>
+          {(space || currentLink) && (
+            <Group gap={5} wrap="nowrap" visibleFrom="sm" miw={0}>
+              <IconChevronRight
+                size={13}
+                color="var(--mantine-color-dimmed)"
+                style={{ flexShrink: 0 }}
+              />
+              <Link
+                to={
+                  space
+                    ? getSpaceUrl(space.slug)
+                    : currentLink.link === "/settings"
+                      ? APP_ROUTE.SETTINGS.ACCOUNT.PROFILE
+                      : currentLink.link
+                }
+                className={classes.link}
+              >
+                {space?.name ?? t(currentLink.label)}
+              </Link>
+            </Group>
+          )}
         </Group>
 
-        <div>
-          <Group visibleFrom="sm">
-            <SearchControl onClick={searchSpotlight.open} />
-          </Group>
-          <Group hiddenFrom="sm">
-            <SearchMobileControl onSearch={searchSpotlight.open} />
-          </Group>
-        </div>
-
-        <Group px={"xl"} wrap="nowrap">
+        <Group gap="xs" wrap="nowrap">
           {aiChatEnabled && (
             <>
               <UnstyledButton
@@ -147,7 +154,12 @@ export function AppHeader() {
                   hiddenFrom="sm"
                   aria-label={t("AI Chat")}
                   onClick={(e: React.MouseEvent) => {
-                    if (e.metaKey || e.ctrlKey || e.shiftKey || e.button === 1) {
+                    if (
+                      e.metaKey ||
+                      e.ctrlKey ||
+                      e.shiftKey ||
+                      e.button === 1
+                    ) {
                       return;
                     }
                     if (isPageRoute) {
@@ -175,7 +187,6 @@ export function AppHeader() {
                 : `${trialDaysLeft} days left`}
             </Badge>
           )}
-          <TopMenu />
         </Group>
       </Group>
     </>

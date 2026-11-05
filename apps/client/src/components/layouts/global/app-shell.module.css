@@ -1,16 +1,45 @@
-.header, .navbar, .aside {
-  background-color: light-dark(#f6f7f9, var(--mantine-color-dark-8));
+.header,
+.navbar,
+.aside {
+  background-color: light-dark(#f7f7f7, #101010);
 }
 
-.navbar, .aside {
+.header {
+  border-bottom-color: light-dark(#e7e7e7, #252525);
+  padding-left: var(--app-shell-navbar-offset, 0px);
+}
+
+.navbar {
+  overflow: visible;
+
+  @media (min-width: $mantine-breakpoint-sm) {
+    top: 0;
+    height: 100dvh;
+    z-index: calc(var(--app-shell-header-z-index, 100) + 1);
+  }
+}
+
+.workspaceBar {
+  min-height: 40px;
+  flex-shrink: 0;
+  padding: 0 12px;
+}
+
+.main {
+  min-width: 0;
+  background: var(--mantine-color-body);
+}
+
+.navbar,
+.aside {
   @media (max-width: $mantine-breakpoint-sm) {
-    width: 350px;
+    width: min(350px, 100vw);
   }
 }
 
 .aside {
   @media (max-width: $mantine-breakpoint-sm) {
-    margin-top: 45px;
+    margin-top: 40px;
   }
 }
 
@@ -22,8 +51,12 @@
   top: 0;
   bottom: 0;
 
-  &:hover, &:active {
+  &:hover,
+  &:active {
     width: 5px;
-    background: light-dark(var(--mantine-color-gray-4), var(--mantine-color-dark-5))
+    background: light-dark(
+      var(--mantine-color-gray-4),
+      var(--mantine-color-dark-5)
+    );
   }
 }

@@ -1,0 +1,52 @@
+/* Native scrolling stays intact; fixed overlay thumbs reserve no layout space. */
+html.overlay-scrollbars,
+html.overlay-scrollbars * {
+  scrollbar-width: none !important;
+  scrollbar-gutter: auto !important;
+}
+
+html.overlay-scrollbars::-webkit-scrollbar,
+html.overlay-scrollbars *::-webkit-scrollbar {
+  display: none;
+  width: 0;
+  height: 0;
+}
+
+.mantine-ScrollArea-scrollbar,
+.mantine-ScrollArea-scrollbar:hover {
+  background: transparent;
+  border: 0;
+  padding: 2px;
+}
+
+.mantine-ScrollArea-thumb {
+  background: light-dark(rgb(0 0 0 / 26%), rgb(255 255 255 / 24%));
+  border-radius: 999px;
+}
+
+.mantine-ScrollArea-scrollbar:hover .mantine-ScrollArea-thumb {
+  background: light-dark(rgb(0 0 0 / 44%), rgb(255 255 255 / 42%));
+}
+
+.mantine-ScrollArea-corner {
+  background: transparent;
+}
+
+/* Explicit offsetScrollbars props must not reintroduce a reserved gutter. */
+.mantine-ScrollArea-viewport[data-offset-scrollbars] {
+  padding-inline-end: 0 !important;
+  padding-bottom: 0 !important;
+}
+
+@media (forced-colors: active) {
+  html.overlay-scrollbars,
+  html.overlay-scrollbars * {
+    scrollbar-width: auto !important;
+  }
+  html.overlay-scrollbars::-webkit-scrollbar,
+  html.overlay-scrollbars *::-webkit-scrollbar {
+    display: block;
+    width: revert;
+    height: revert;
+  }
+}

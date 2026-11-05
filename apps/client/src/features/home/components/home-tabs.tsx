@@ -6,6 +6,7 @@ import CreatedByMe from "./created-by-me";
 import { useTranslation } from "react-i18next";
 import { useAtom } from "jotai";
 import { homeTabAtom } from "@/features/home/atoms/home-tab-atom";
+import classes from "./home.module.css";
 
 export default function HomeTabs() {
   const { t } = useTranslation();
@@ -13,6 +14,7 @@ export default function HomeTabs() {
 
   return (
     <Tabs
+      className={classes.tabs}
       color="dark"
       value={activeTab}
       onChange={(value) => {
